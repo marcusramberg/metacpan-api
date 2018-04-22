@@ -19,6 +19,7 @@ use MetaCPAN::Script::Mapping::User::Account      ();
 use MetaCPAN::Script::Mapping::User::Identity     ();
 use MetaCPAN::Script::Mapping::User::Session      ();
 use MetaCPAN::Script::Mapping::Contributor        ();
+use MetaCPAN::Script::Mapping::Cover              ();
 use MetaCPAN::Types qw( Bool Str );
 
 use constant {
@@ -380,44 +381,46 @@ sub deploy_mapping {
             author =>
                 decode_json(MetaCPAN::Script::Mapping::CPAN::Author::mapping),
             distribution =>
-                decode_json( MetaCPAN::Script::Mapping::CPAN::Distribution::mapping
+                decode_json(MetaCPAN::Script::Mapping::CPAN::Distribution::mapping
                 ),
             favorite =>
-                decode_json( MetaCPAN::Script::Mapping::CPAN::Favorite::mapping
+                decode_json(MetaCPAN::Script::Mapping::CPAN::Favorite::mapping
                 ),
             file =>
                 decode_json(MetaCPAN::Script::Mapping::CPAN::File::mapping),
             mirror =>
                 decode_json(MetaCPAN::Script::Mapping::CPAN::Mirror::mapping),
             permission =>
-                decode_json( MetaCPAN::Script::Mapping::CPAN::Permission::mapping
+                decode_json(MetaCPAN::Script::Mapping::CPAN::Permission::mapping
                 ),
             package =>
-                decode_json( MetaCPAN::Script::Mapping::CPAN::Package::mapping
+                decode_json(MetaCPAN::Script::Mapping::CPAN::Package::mapping
                 ),
             rating =>
                 decode_json(MetaCPAN::Script::Mapping::CPAN::Rating::mapping),
             release =>
-                decode_json( MetaCPAN::Script::Mapping::CPAN::Release::mapping
+                decode_json(MetaCPAN::Script::Mapping::CPAN::Release::mapping
                 ),
         },
 
         user => {
             account =>
-                decode_json( MetaCPAN::Script::Mapping::User::Account::mapping
+                decode_json(MetaCPAN::Script::Mapping::User::Account::mapping
                 ),
             identity =>
-                decode_json( MetaCPAN::Script::Mapping::User::Identity::mapping
+                decode_json(MetaCPAN::Script::Mapping::User::Identity::mapping
                 ),
             session =>
-                decode_json( MetaCPAN::Script::Mapping::User::Session::mapping
+                decode_json(MetaCPAN::Script::Mapping::User::Session::mapping
                 ),
         },
         contributor => {
             contributor =>
-                decode_json( MetaCPAN::Script::Mapping::Contributor::mapping
-                ),
-        }
+                decode_json(MetaCPAN::Script::Mapping::Contributor::mapping),
+        },
+        cover => {
+            cover => decode_json(MetaCPAN::Script::Mapping::Cover::mapping),
+        },
     );
 
     my $deploy_statement

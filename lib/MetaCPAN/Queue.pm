@@ -11,6 +11,11 @@ queue.
     # Display information on jobs in queue
     ./bin/run bin/queue.pl minion job
 
+To run the minion admin web interface, run the following on one of the servers:
+
+    # Run the daemon on a local port (tunnel to display on your browser)
+    ./bin/run bin/queue.pl daemon
+
 =cut
 
 use Mojo::Base 'Mojolicious';
@@ -27,12 +32,16 @@ sub startup {
 
     my $helper = MetaCPAN::Queue::Helper->new;
     $self->plugin( Minion => $helper->backend );
+    $self->plugin( 'Minion::Admin' => { route => $self->routes->any('/') } );
 
     $self->minion->add_task(
         index_release => $self->_gen_index_task_sub('release') );
 
     $self->minion->add_task(
         index_latest => $self->_gen_index_task_sub('latest') );
+
+    $self->minion->add_task(
+        index_favorite => $self->_gen_index_task_sub('favorite') );
 }
 
 sub _gen_index_task_sub {

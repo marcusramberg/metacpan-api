@@ -1,11 +1,14 @@
 use strict;
 use warnings;
 
-use File::Basename;
-use Config::ZOMG;
-use Log::Log4perl;
-use File::Spec;
-use File::Path ();
+use Config::ZOMG   ();
+use File::Basename ();
+use File::Path     ();
+use File::Spec     ();
+use Log::Log4perl  ();
+use Path::Tiny qw( path );
+use Plack::App::Directory ();
+use Plack::App::URLMap    ();
 
 my $root_dir;
 my $dev_mode;
@@ -43,10 +46,19 @@ use lib "$root_dir/lib";
 
 use MetaCPAN::Server;
 
+STDERR->autoflush;
+
 # prevent output buffering when in Docker containers (e.g. in docker-compose)
 if ( -e "/.dockerenv" and MetaCPAN::Server->log->isa('Catalyst::Log') ) {
-    STDERR->autoflush;
     STDOUT->autoflush;
 }
 
-MetaCPAN::Server->app;
+my $static
+    = Plack::App::Directory->new(
+    { root => path( $root_dir, 'root', 'static' ) } )->to_app;
+
+my $urlmap = Plack::App::URLMap->new;
+$urlmap->map( '/static' => $static );
+$urlmap->map( '/'       => MetaCPAN::Server->app );
+
+return $urlmap->to_app;

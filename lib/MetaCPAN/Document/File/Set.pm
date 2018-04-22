@@ -6,9 +6,26 @@ use MetaCPAN::Util qw( single_valued_arrayref_to_scalar );
 use Ref::Util qw( is_hashref );
 use List::Util qw( max );
 
+use MetaCPAN::Query::File;
 use MetaCPAN::Query::Favorite;
 
 extends 'ElasticSearchX::Model::Document::Set';
+
+has query_file => (
+    is      => 'ro',
+    isa     => 'MetaCPAN::Query::File',
+    lazy    => 1,
+    builder => '_build_query_file',
+    handles => [qw< dir interesting_files >],
+);
+
+sub _build_query_file {
+    my $self = shift;
+    return MetaCPAN::Query::File->new(
+        es         => $self->es,
+        index_name => $self->index->name,
+    );
+}
 
 has query_favorite => (
     is      => 'ro',
@@ -90,7 +107,7 @@ sub find {
                 ]
             }
         }
-        )->sort(
+    )->sort(
         [
             '_score',
             { 'version_numified' => { order => 'desc' } },
@@ -98,12 +115,12 @@ sub find {
             { 'mime'             => { order => 'asc' } },
             { 'stat.mtime'       => { order => 'desc' } }
         ]
-        )->search_type('dfs_query_then_fetch')->size(100)->all;
+    )->search_type('dfs_query_then_fetch')->size(100)->all;
 
     my ($file) = grep {
         grep { $_->indexed && $_->authorized && $_->name eq $module }
             @{ $_->module || [] }
-        } grep { !$_->documentation || $_->documentation eq $module }
+    } grep { !$_->documentation || $_->documentation eq $module }
         @candidates;
 
     $file ||= shift @candidates;
@@ -169,7 +186,8 @@ sub documented_modules {
                 },
             ],
         }
-    )->size(999);
+    )->size(999)
+        ->source( [qw(name module path documentation distribution)] )->all;
 }
 
 =head2 find_download_url
@@ -265,6 +283,7 @@ sub find_download_url {
             'module.version_numified' => {
                 mode          => 'max',
                 order         => 'desc',
+                nested_path   => 'module',
                 nested_filter => $module_f->{nested}{filter}
             }
         },
@@ -498,7 +517,7 @@ sub autocomplete_suggester {
     my ( $self, $query ) = @_;
     return $self unless $query;
 
-    my $search_size = 50;
+    my $search_size = 100;
 
     my $suggestions
         = $self->search_type('dfs_query_then_fetch')->es->suggest(
@@ -523,7 +542,7 @@ sub autocomplete_suggester {
             ( $docs{ $suggest->{text} }, $suggest->{score} );
     }
 
-    my @fields = (qw(documentation distribution author release));
+    my @fields = (qw(documentation distribution author release deprecated));
     my $data   = $self->es->search(
         {
             index => $self->index->name,
@@ -561,6 +580,12 @@ sub autocomplete_suggester {
         ( $_->{fields}{documentation}[0] => \%record );
     } @{ $data->{hits}{hits} };
 
+    # normalize 'deprecated' field values to boolean (1/0) values (because ES)
+    for my $v ( values %valid ) {
+        $v->{deprecated} = 1 if $v->{deprecated} eq 'true';
+        $v->{deprecated} = 0 if $v->{deprecated} eq 'false';
+    }
+
     # remove any exact match, it will be added later
     my $exact = delete $valid{$query};
 
@@ -571,7 +596,8 @@ sub autocomplete_suggester {
     no warnings 'uninitialized';
     my @sorted = map { $valid{$_} }
         sort {
-        $favorites->{ $valid{$b}->{distribution} }
+               $valid{$a}->{deprecated} <=> $valid{$b}->{deprecated}
+            || $favorites->{ $valid{$b}->{distribution} }
             <=> $favorites->{ $valid{$a}->{distribution} }
             || $docs{$b} <=> $docs{$a}
             || length($a) <=> length($b)
@@ -580,158 +606,6 @@ sub autocomplete_suggester {
         keys %valid;
 
     return +{ suggestions => [ grep {defined} ( $exact, @sorted ) ] };
-}
-
-sub dir {
-    my ( $self, $author, $release, @path ) = @_;
-
-    my $body = {
-        query => {
-            bool => {
-                must => [
-                    { term => { 'level'   => scalar @path } },
-                    { term => { 'author'  => $author } },
-                    { term => { 'release' => $release } },
-                    {
-                        prefix => {
-                            'path' => join( q{/}, @path, q{} )
-                        }
-                    },
-                ]
-            },
-        },
-        size   => 999,
-        fields => [
-            qw(name stat.mtime path stat.size directory slop documentation mime)
-        ],
-    };
-
-    my $data = $self->es->search(
-        {
-            index => $self->index->name,
-            type  => 'file',
-            body  => $body,
-        }
-    );
-    return unless $data->{hits}{total};
-
-    my $dir = [ map { $_->{fields} } @{ $data->{hits}{hits} } ];
-    single_valued_arrayref_to_scalar($dir);
-
-    return { dir => $dir };
-}
-
-sub interesting_files {
-    my ( $self, $author, $release ) = @_;
-
-    my $body = {
-        query => {
-            bool => {
-                must => [
-                    { term => { release   => $release } },
-                    { term => { author    => $author } },
-                    { term => { directory => \0 } },
-                    { not  => { prefix    => { 'path' => 'xt/' } } },
-                    { not  => { prefix    => { 'path' => 't/' } } },
-                    {
-                        bool => {
-                            should => [
-                                {
-                                    bool => {
-                                        must => [
-                                            { term => { level => 0 } },
-                                            {
-                                                terms => {
-                                                    name => [
-                                                        qw(
-                                                            AUTHORS
-                                                            Build.PL
-                                                            CHANGELOG
-                                                            CHANGES
-                                                            CONTRIBUTING
-                                                            CONTRIBUTING.md
-                                                            COPYING
-                                                            COPYRIGHT
-                                                            CREDITS
-                                                            ChangeLog
-                                                            Changelog
-                                                            Changes
-                                                            Copying
-                                                            FAQ
-                                                            INSTALL
-                                                            INSTALL.md
-                                                            LICENCE
-                                                            LICENSE
-                                                            MANIFEST
-                                                            META.json
-                                                            META.yml
-                                                            Makefile.PL
-                                                            NEWS
-                                                            README
-                                                            README.markdown
-                                                            README.md
-                                                            README.mdown
-                                                            README.mkdn
-                                                            THANKS
-                                                            TODO
-                                                            ToDo
-                                                            Todo
-                                                            cpanfile
-                                                            alienfile
-                                                            dist.ini
-                                                            minil.toml
-                                                            )
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                map {
-                                    { prefix     => { 'name' => $_ } },
-                                        { prefix => { 'path' => $_ } },
-
-                                 # With "prefix" we don't need the plural "s".
-                                    } qw(
-                                    ex eg
-                                    example Example
-                                    sample
-                                    )
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-
-        # NOTE: We could inject author/release/distribution into each result
-        # in the controller if asking ES for less data would be better.
-        fields => [
-            qw(
-                name documentation path pod_lines
-                author release distribution status
-                )
-        ],
-        size => 250,
-    };
-
-    my $data = $self->es->search(
-        {
-            index => $self->index->name,
-            type  => 'file',
-            body  => $body,
-        }
-    );
-    return unless $data->{hits}{total};
-
-    my $files = [ map { $_->{fields} } @{ $data->{hits}{hits} } ];
-    single_valued_arrayref_to_scalar($files);
-
-    return {
-        files => $files,
-        total => $data->{hits}{total},
-        took  => $data->{took}
-    };
 }
 
 sub find_changes_files {
@@ -783,7 +657,7 @@ sub find_changes_files {
                 }
             ]
         }
-        )->size(1)
+    )->size(1)
 
         # HACK: Sort by level/desc to put pod/perldeta.pod first (if found)
         # otherwise sort root files by name and select the first.

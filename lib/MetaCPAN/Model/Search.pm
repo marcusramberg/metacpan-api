@@ -431,9 +431,10 @@ sub build_query {
 sub run_query {
     my ( $self, $type, $es_query ) = @_;
     return $self->_run_query(
-        index => $self->index,
-        type  => $type,
-        body  => $es_query,
+        index       => $self->index,
+        type        => $type,
+        body        => $es_query,
+        search_type => 'dfs_query_then_fetch',
     );
 }
 
@@ -532,9 +533,10 @@ sub _extract_results_add_favs {
             +{
                 %{ $res->{fields} },
                 %{ $res->{_source} },
-                abstract  => delete $res->{fields}->{'abstract.analyzed'},
-                score     => $res->{_score},
-                favorites => $favorites->{ $res->{fields}->{distribution} },
+                abstract => delete $res->{fields}->{'abstract.analyzed'},
+                score    => $res->{_score},
+                favorites =>
+                    $favorites->{favorites}{ $res->{fields}->{distribution} },
                 }
         } @{ $es_results->{hits}{hits} }
     ];

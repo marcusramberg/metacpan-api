@@ -23,7 +23,7 @@ sub _build_url {
     $ENV{HARNESS_ACTIVE}
         ? 'file:'
         . $self->home->file('t/var/cpantesters-release-api-fake.json')
-        : 'http://api.cpantesters.org/v3/release';
+        : 'http://api-3.cpantesters.org/v3/release';
 }
 
 has _bulk => (
@@ -32,8 +32,10 @@ has _bulk => (
     lazy    => 1,
     default => sub {
         $_[0]->es->bulk_helper(
-            index => $_[0]->index->name,
-            type  => 'release'
+            index     => $_[0]->index->name,
+            type      => 'release',
+            max_count => 250,
+            timeout   => '30m',
         );
     },
 );
@@ -50,7 +52,11 @@ sub index_reports {
     my $es = $self->es;
 
     log_info { 'Fetching ' . $self->url };
-    my $res  = $self->ua->get( $self->url );
+
+    my $res;
+    eval { $res = $self->ua->get( $self->url ) };
+    return unless $res and $res->code == 200;
+
     my $json = $res->decoded_content;
     my $data = decode_json $json;
 

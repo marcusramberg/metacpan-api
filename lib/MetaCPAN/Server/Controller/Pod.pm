@@ -43,11 +43,8 @@ sub get : Path('') : Args(1) {
 
 sub find_dist_links {
     my ( $self, $c, $author, $release, $permalinks ) = @_;
-    my $module_query
-        = $c->model('CPAN::File')
-        ->documented_modules( { name => $release, author => $author } )
-        ->source( [qw(name module path documentation distribution)] );
-    my @modules = $module_query->all;
+    my @modules = $c->model('CPAN::File')
+        ->documented_modules( { name => $release, author => $author } );
 
     my $links = {};
 
@@ -78,6 +75,16 @@ sub find_dist_links {
         }
     }
     return $links;
+}
+
+sub render : Path('/pod_render') {
+    my ( $self, $c ) = @_;
+    my $pod         = $c->req->parameters->{pod};
+    my $show_errors = !!$c->req->parameters->{show_errors};
+    $c->res->content_type('text/x-pod');
+    $c->res->body($pod);
+    $c->stash( { show_errors => $show_errors } );
+    $c->forward( $c->view('Pod') );
 }
 
 1;

@@ -10,8 +10,9 @@ use CatalystX::RoleApplicator;
 use File::Temp qw( tempdir );
 use Plack::Middleware::ReverseProxy;
 use Plack::Middleware::ServerStatus::Lite;
-use Ref::Util qw( is_arrayref );
+use Ref::Util qw( is_arrayref is_hashref );
 use Plack::Builder;
+use Digest::SHA;
 
 extends 'Catalyst';
 
@@ -97,11 +98,23 @@ sub app {
             my $app = shift;
             sub {
                 my ($env) = @_;
+
+                my $request_id = Digest::SHA::sha1_hex(
+                    join( "\0",
+                        $env->{REMOTE_ADDR}, $env->{REQUEST_URI}, time, $$,
+                        rand, )
+                );
+                $env->{'MetaCPAN::Server.request_id'} = $request_id;
+
                 Log::Log4perl::MDC->remove;
-                Log::Log4perl::MDC->put( "ip",      $env->{REMOTE_ADDR} );
+                Log::Log4perl::MDC->put( "request_id", $request_id );
+                Log::Log4perl::MDC->put( "ip",         $env->{REMOTE_ADDR} );
                 Log::Log4perl::MDC->put( "method",  $env->{REMOTE_METHOD} );
                 Log::Log4perl::MDC->put( "url",     $env->{REQUEST_URI} );
                 Log::Log4perl::MDC->put( "referer", $env->{HTTP_REFERER} );
+                Log::Log4perl::MDC->put( "web_request_id",
+                    $env->{HTTP_X_METACPAN_REQUEST_ID} )
+                    if $env->{HTTP_X_METACPAN_REQUEST_ID};
                 $app->($env);
             };
         };
@@ -156,7 +169,7 @@ sub read_param {
 # with a not_found message
 sub stash_or_detach {
     my ( $c, $data ) = @_;
-    $data
+    ( $data and is_hashref($data) )
         ? $c->stash($data)
         : $c->detach( '/not_found',
         ['The requested info could not be found'] );

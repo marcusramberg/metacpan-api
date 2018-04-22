@@ -121,7 +121,7 @@ has http_client => (
 sub _build_http_client {
     return HTTP::Tiny->new(
         default_headers => { 'Accept' => 'application/json' },
-        timeout         => 120,       # list can be slow
+        timeout => 120,    # list can be slow
     );
 }
 
@@ -137,6 +137,7 @@ sub run {
     return $self->run_setup      if $self->setup;
     return $self->run_snapshot   if $self->snap;
     return $self->run_purge_old  if $self->purge_old;
+    return $self->run_restore    if $self->restore;
 
     die "setup, restore, purge-old or snap argument required";
 }

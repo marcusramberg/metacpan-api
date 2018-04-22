@@ -2653,6 +2653,14 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.30
       Test::More 0.90
+  Encoding-FixLatin-XS-1.01
+    pathname: G/GR/GRANTM/Encoding-FixLatin-XS-1.01.tar.gz
+    provides:
+      Encoding::FixLatin::XS 1.01
+    requirements:
+      Encoding::FixLatin 1.03
+      ExtUtils::MakeMaker 6.30
+      Test::More 0.90
   Error-0.17025
     pathname: S/SH/SHLOMIF/Error-0.17025.tar.gz
     provides:
@@ -3110,6 +3118,21 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       File::Spec 0
       Test::More 0
+  Gazelle-0.46
+    pathname: K/KA/KAZEBURO/Gazelle-0.46.tar.gz
+    provides:
+      Gazelle 0.46
+      Plack::Handler::Gazelle 0.46
+    requirements:
+      Devel::CheckCompiler 0.04
+      Guard 0
+      Module::Build 0.38
+      Parallel::Prefork 0.18
+      Plack 1.0037
+      Server::Starter 0
+      Stream::Buffered 0
+      Try::Tiny 0
+      perl 5.008001
   Getopt-Long-Descriptive-0.100
     pathname: R/RJ/RJBS/Getopt-Long-Descriptive-0.100.tar.gz
     provides:
@@ -3229,6 +3252,12 @@ DISTRIBUTIONS
       URI::Escape 0
       parent 0
       perl v5.6.0
+  Guard-1.023
+    pathname: M/ML/MLEHMANN/Guard-1.023.tar.gz
+    provides:
+      Guard 1.023
+    requirements:
+      ExtUtils::MakeMaker 0
   HTML-Form-6.03
     pathname: G/GA/GAAS/HTML-Form-6.03.tar.gz
     provides:
@@ -3722,6 +3751,12 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0.31
       Time::HiRes 0
+  IPC-Signal-1.00
+    pathname: R/RO/ROSCH/IPC-Signal-1.00.tar.gz
+    provides:
+      IPC::Signal 1.00
+    requirements:
+      ExtUtils::MakeMaker 0
   IPC-System-Simple-1.25
     pathname: P/PJ/PJF/IPC-System-Simple-1.25.tar.gz
     provides:
@@ -3778,6 +3813,7 @@ DISTRIBUTIONS
       JSON::MaybeXS 1.003009
     requirements:
       Carp 0
+      Cpanel::JSON::XS 2.3310
       ExtUtils::CBuilder 0.27
       ExtUtils::MakeMaker 0
       File::Spec 0
@@ -4341,6 +4377,13 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
+  MetaCPAN-Pod-XHTML-0.001001
+    pathname: H/HA/HAARG/MetaCPAN-Pod-XHTML-0.001001.tar.gz
+    provides:
+      MetaCPAN::Pod::XHTML 0.001001
+    requirements:
+      ExtUtils::MakeMaker 0
+      Pod::Simple::XHTML 0
   MetaCPAN-Role-0.06
     pathname: L/LL/LLAP/MetaCPAN-Role-0.06.tar.gz
     provides:
@@ -4354,13 +4397,13 @@ DISTRIBUTIONS
       Moose::Role 0
       MooseX::Fastly::Role 0.01
       Net::Fastly 1.05
-  Minion-7.09
-    pathname: S/SR/SRI/Minion-7.09.tar.gz
+  Minion-9.03
+    pathname: S/SR/SRI/Minion-9.03.tar.gz
     provides:
       LinkCheck undef
       LinkCheck::Controller::Links undef
       LinkCheck::Task::CheckLinks undef
-      Minion 7.09
+      Minion 9.03
       Minion::Backend undef
       Minion::Backend::Pg undef
       Minion::Command::minion undef
@@ -4368,11 +4411,12 @@ DISTRIBUTIONS
       Minion::Command::minion::worker undef
       Minion::Job undef
       Minion::Worker undef
-      Minion::_Guard 7.09
+      Minion::_Guard 9.03
       Mojolicious::Plugin::Minion undef
+      Mojolicious::Plugin::Minion::Admin undef
     requirements:
       ExtUtils::MakeMaker 0
-      Mojolicious 7.29
+      Mojolicious 7.56
       perl 5.010001
   Minion-Backend-SQLite-2.004
     pathname: D/DB/DBOOK/Minion-Backend-SQLite-2.004.tar.gz
@@ -4626,20 +4670,21 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Mojo-Pg-4.03
-    pathname: S/SR/SRI/Mojo-Pg-4.03.tar.gz
+  Mojo-Pg-4.08
+    pathname: S/SR/SRI/Mojo-Pg-4.08.tar.gz
     provides:
-      Mojo::Pg 4.03
+      Mojo::Pg 4.08
       Mojo::Pg::Database undef
       Mojo::Pg::Migrations undef
       Mojo::Pg::PubSub undef
       Mojo::Pg::Results undef
       Mojo::Pg::Transaction undef
+      SQL::Abstract::Pg undef
     requirements:
       DBD::Pg 3.005001
       ExtUtils::MakeMaker 0
       Mojolicious 7.53
-      SQL::Abstract 1.81
+      SQL::Abstract 1.85
       perl 5.010001
   Mojo-SQLite-3.000
     pathname: D/DB/DBOOK/Mojo-SQLite-3.000.tar.gz
@@ -6440,6 +6485,22 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
+  Parallel-Prefork-0.18
+    pathname: K/KA/KAZUHO/Parallel-Prefork-0.18.tar.gz
+    provides:
+      Parallel::Prefork 0.18
+      Parallel::Prefork::SpareWorkers undef
+      Parallel::Prefork::SpareWorkers::Scoreboard undef
+    requirements:
+      Class::Accessor::Lite 0.04
+      ExtUtils::MakeMaker 6.59
+      List::MoreUtils 0
+      Proc::Wait3 0.03
+      Scope::Guard 0
+      Signal::Mask 0
+      Test::Requires 0
+      Test::SharedFork 0
+      perl 5.008001
   Parallel-Scoreboard-0.08
     pathname: K/KA/KAZUHO/Parallel-Scoreboard-0.08.tar.gz
     provides:
@@ -6903,27 +6964,27 @@ DISTRIBUTIONS
       strict 0
       version 0.77
       warnings 0
-  Perl-Tidy-20170521
-    pathname: S/SH/SHANCOCK/Perl-Tidy-20170521.tar.gz
+  Perl-Tidy-20180220
+    pathname: S/SH/SHANCOCK/Perl-Tidy-20180220.tar.gz
     provides:
-      Perl::Tidy 20170521
-      Perl::Tidy::Debugger 20170521
-      Perl::Tidy::DevNull 20170521
-      Perl::Tidy::Diagnostics 20170521
-      Perl::Tidy::FileWriter 20170521
-      Perl::Tidy::Formatter 20170521
-      Perl::Tidy::HtmlWriter 20170521
-      Perl::Tidy::IOScalar 20170521
-      Perl::Tidy::IOScalarArray 20170521
-      Perl::Tidy::IndentationItem 20170521
-      Perl::Tidy::LineBuffer 20170521
-      Perl::Tidy::LineSink 20170521
-      Perl::Tidy::LineSource 20170521
-      Perl::Tidy::Logger 20170521
-      Perl::Tidy::Tokenizer 20170521
-      Perl::Tidy::VerticalAligner 20170521
-      Perl::Tidy::VerticalAligner::Alignment 20170521
-      Perl::Tidy::VerticalAligner::Line 20170521
+      Perl::Tidy 20180220
+      Perl::Tidy::Debugger 20180220
+      Perl::Tidy::DevNull 20180220
+      Perl::Tidy::Diagnostics 20180220
+      Perl::Tidy::FileWriter 20180220
+      Perl::Tidy::Formatter 20180220
+      Perl::Tidy::HtmlWriter 20180220
+      Perl::Tidy::IOScalar 20180220
+      Perl::Tidy::IOScalarArray 20180220
+      Perl::Tidy::IndentationItem 20180220
+      Perl::Tidy::LineBuffer 20180220
+      Perl::Tidy::LineSink 20180220
+      Perl::Tidy::LineSource 20180220
+      Perl::Tidy::Logger 20180220
+      Perl::Tidy::Tokenizer 20180220
+      Perl::Tidy::VerticalAligner 20180220
+      Perl::Tidy::VerticalAligner::Alignment 20180220
+      Perl::Tidy::VerticalAligner::Line 20180220
     requirements:
       ExtUtils::MakeMaker 0
   PerlIO-gzip-0.20
@@ -7344,6 +7405,12 @@ DISTRIBUTIONS
       perl 5.008
       strict 0
       warnings 0
+  Proc-Wait3-0.05
+    pathname: C/CT/CTILMES/Proc-Wait3-0.05.tar.gz
+    provides:
+      Proc::Wait3 0.05
+    requirements:
+      ExtUtils::MakeMaker 0
   Readonly-2.05
     pathname: S/SA/SANKO/Readonly-2.05.tar.gz
     provides:
@@ -7435,10 +7502,10 @@ DISTRIBUTIONS
     requirements:
       Exporter 5.57
       perl 5.006
-  SQL-Abstract-1.84
-    pathname: I/IL/ILMARI/SQL-Abstract-1.84.tar.gz
+  SQL-Abstract-1.85
+    pathname: I/IL/ILMARI/SQL-Abstract-1.85.tar.gz
     provides:
-      SQL::Abstract 1.84
+      SQL::Abstract 1.85
       SQL::Abstract::Test undef
       SQL::Abstract::Tree undef
     requirements:
@@ -7451,6 +7518,7 @@ DISTRIBUTIONS
       Scalar::Util 0
       Sub::Quote 2.000001
       Text::Balanced 2.00
+      perl 5.006
   Safe-Isa-1.000008
     pathname: E/ET/ETHER/Safe-Isa-1.000008.tar.gz
     provides:
@@ -7570,6 +7638,27 @@ DISTRIBUTIONS
       URI 0
       namespace::clean 0
       overload 0
+      strict 0
+      warnings 0
+  Server-Starter-0.33
+    pathname: K/KA/KAZUHO/Server-Starter-0.33.tar.gz
+    provides:
+      Server::Starter 0.33
+      Server::Starter::Guard undef
+    requirements:
+      ExtUtils::CBuilder 0
+      Module::Build 0.4005
+      perl 5.008
+  Signal-Mask-0.008
+    pathname: L/LE/LEONT/Signal-Mask-0.008.tar.gz
+    provides:
+      Signal::Mask 0.008
+      Signal::Pending 0.008
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 6.30
+      IPC::Signal 0
+      POSIX 0
       strict 0
       warnings 0
   Sort-Naturally-1.03
@@ -8052,17 +8141,6 @@ DISTRIBUTIONS
       Test::Harness 3.35
       Test::More 1.302047
       Test::Warn 0.30
-  Test-NoWarnings-1.04
-    pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
-    provides:
-      Test::NoWarnings 1.04
-      Test::NoWarnings::Warning 1.04
-    requirements:
-      ExtUtils::MakeMaker 0
-      Test::Builder 0.86
-      Test::More 0.47
-      Test::Tester 0.107
-      perl 5.006
   Test-Object-0.07
     pathname: A/AD/ADAMK/Test-Object-0.07.tar.gz
     provides:
