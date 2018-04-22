@@ -198,11 +198,11 @@ sub create_index {
     my $dst_idx = $self->arg_create_index;
     $self->_check_index_exists( $dst_idx, NOT_EXPECTED );
 
-    my $patch_mapping    = decode_json $self->patch_mapping;
-    my @patch_types      = sort keys %{$patch_mapping};
-    my $dep              = $self->index->deployment_statement;
-    my $existing_mapping = delete $dep->{mappings};
-    my $mapping = $self->skip_existing_mapping ? +{} : $existing_mapping;
+    my $patch_mapping = decode_json $self->patch_mapping;
+    my @patch_types   = sort keys %{$patch_mapping};
+    my $dep           = $self->index->deployment_statement;
+    delete $dep->{mappings};
+    my $mapping = +{};
 
     # create the new index with the copied settings
     log_info {"Creating index: $dst_idx"};
